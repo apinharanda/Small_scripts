@@ -1,0 +1,71 @@
+####this is just an example of how to run angsd for RAL lines and do a plot with the output 
+
+Workflow:
+
+1) Download vcf for DGRP strains
+http://dgrp.gnets.ncsu.edu/data/website/dgrp2.vcf and filter just for SNPs QUAL>=20
+File: DGRP2.source_NCSU.dm3_filtered.vcf.gz
+
+2) Download dm3 (freeze 2) which was the genome reference that was used to call these SNPs
+Check chr names so that they match vcf names, make reference have 60 nt per/line
+File: dm3_mod_chrNames.fa
+
+3) Use bcftools consensus --iupac-codes to extract each line for the vcf and update reference fasta with SNPs
+Check how lines are named in the vcf
+
+For example, for line 21:
+cat dm3_mod_chrNames.fa | bcftools consensus --iupac-codes --sample line_21 DGRP2.source_NCSU.dm3_filtered.vcf.gz > line_21.fasta
+
+Number of variants that were called (using filtered vcf) and updated in the pseudoref fasta for each line, Dropbox/Ana-Peter/DE_RAL_alignments/lines_205_ANGST/filtered_vcf_variants.log
+Pseudofastas for each line in lines_205_ANGST/RAL_pseudorefs.tar.gz
+(virtual env bcftools)
+
+4) Simulate reads for each line’s pseudofasta fasta to create fqs
+For these PCAs I used BBMap to simulate fqs with 1X exactly with BBMap (not 1X poisson simulated fqs, which would be using with wgsim)
+
+For example, for line 21:
+shred.sh in=line_21_dm3.fa out= line_21_dm3_1x.fq length=150 overwrite=true
+(virtual env base_genomics)
+
+5) Map simulated reads (simulated from each pseudoref fasta) to the reference genome dm3; make bam; sort; index
+
+bwa mem -t 8 dm3_mod_chrNames.fa line_21_dm3_1x.fq -o line_21_WholeGenome_1x.sam
+samtools view -@8 -S -b line_21_WholeGenome_1x.sam > line_21_WholeGenome_1x.bam
+samtools sort -@ 8 -m 3G line_21_WholeGenome_1x.bam line_21_WholeGenome_1x_sorted
+samtools index line_21_WholeGenome_1x_sorted.bam
+
+(virtual env base_genomics)
+
+6) Run ANGSD
+ls *_sorted.bam > sorted.bam_list
+
+nohup angsd -bam sorted.bam_list -nThreads 8 -GL 2 -doMajorMinor 1 -doMaf 1 -SNP_pval 2e-6 -doIBS 1 -doCounts 1 -doCov 1 -makeMatrix 1 -minMaf 0.05 -P 5 -out RAL_all_sorted.angsdput > RAL_all_sorted.angsdput.log &
+
+(virtual env angsd)
+
+Output files: lines_205_ANGST/Output_ANGSD
+
+7) Quick plot
+
+(virtual env R) 
+
+rm(list=ls())
+
+name <- "RAL_all_sorted.angsdput.ibsMat"
+m <- as.matrix(read.table(name))
+
+mds <- cmdscale(as.dist(m))
+
+mds.df <- as.data.frame(mds)
+mds.df$strain <- c("L100","L101","L105","L109","L129","L136","L138","L142","L149","L153","L158","L161","L176","L177","L181","L189","L195","L208","L217","L21","L223","L227","L228","L229","L233","L235","L237","L239","L256","L26","L280","L287","L28","L301","L303","L304","L306","L307","L309","L310","L313","L315","L317","L318","L319","L31","L320","L321","L324","L325","L32","L332","L335","L336","L338","L340","L348","L350","L352","L354","L355","L356","L357","L358","L359","L360","L361","L362","L365","L367","L370","L371","L373","L374","L375","L377","L379","L380","L381","L382","L383","L385","L386","L38","L390","L391","L392","L395","L397","L399","L405","L406","L409","L40","L41","L426","L427","L42","L437","L439","L440","L441","L443","L45","L461","L486","L48","L491","L492","L49","L502","L505","L508","L509","L513","L517","L528","L530","L531","L535","L551","L555","L559","L563","L566","L57","L584","L589","L595","L596","L59","L627","L630","L634","L639","L642","L646","L69","L703","L705","L707","L712","L714","L716","L721","L727","L730","L732","L737","L738","L73","L748","L757","L75","L761","L765","L774","L776","L783","L786","L787","L790","L796","L799","L801","L802","L804","L805","L808","L810","L812","L818","L819","L820","L821","L822","L832","L837","L83","L843","L849","L850","L852","L853","L855","L857","L859","L85","L861","L879","L882","L884","L887","L88","L890","L892","L894","L897","L900","L907","L908","L911","L913","L91","L93")
+
+
+library("ggplot2")
+
+pdf("second_mds_ggplot.pdf")
+ggplot(mds.df, aes(V1, V2, label=strain)) + 
+geom_point(size=0.3, alpha=0.5)+
+geom_text(size=1,hjust = "center", colour="blue")+
+labs(x="", y="", title="MDS") +
+theme_bw()
+dev.off()

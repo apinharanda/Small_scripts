@@ -1,0 +1,34 @@
+###v1 6Feb2022
+
+#quick description of ways to simulate reads
+
+
+##model 100x reads across the genome (1X but covering whole genome)
+#Usage:	shred.sh in=<file> out=<file> length=<number> minlength=<number> overlap=<number>
+in=<file>       Input sequences.
+out=<file>      Destination of output shreds.
+length=500      Desired length of shreds.
+minlength=1     Shortest allowed shred.  The last shred of each input sequence may be shorter than desired length.
+overlap=0       Amount of overlap between successive reads.
+reads=-1        If nonnegative, stop after this many input sequences.
+equal=f         Shred each sequence into subsequences of equal size of at most 'length', instead of a fixed size.
+median=0        If nonzero, randomly shred reads to a length with this median.
+variance=0      If median is nonzero, shred to lengths of median +-variance.
+
+
+shred.sh in=RAL-799_r6.36.wrapped_coord.masked.fa out=RAL-799_r6.36_R1_1x.fq length=150 overwrite=true
+
+###or normal distribution
+#calculate how much coverage is needed
+#C=LN/G
+#coverage = 150*(959077)/122653977
+
+###now do 1x but not covering the full genome
+##check the wgsim man page, there is a lot of different options
+conda activate wgsim
+
+wgsim RAL-799_r6.36.wrapped_coord.masked.fa RAL-799_r6.36_R1_1xNormal.fq RAL-799_r6.36_R2_1xNormal.fq -1 150 -2 150 -N 959077 &> RAL-799_r6.36_wgSim_1x.log &
+
+#then after it finishes, remember to gzip the reads so that they dont take so much space
+
+#simulating reads in genomes that are hard masked goes crazy, need to soft masked or not masked  

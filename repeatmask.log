@@ -1,0 +1,32 @@
+###v1 15March2022
+
+#quick description of how to repeat mask genomes
+
+#create conda enviroment and install it
+
+conda create -n repeatmasker python=3.7 -y
+conda activate repeatmasker
+conda install -c bioconda -y repeatmasker
+
+##the example header
+
+#!/bin/bash
+#SBATCH --account=palab
+#SBATCH --nodes=1   
+#SBATCH --time=72:00:00
+#SBATCH --mem=100G
+#SBATCH --cpus-per-task=20
+#SBATCH --job-name=repeatmasker
+
+###then example commands
+
+
+RepeatMasker -pa 50 -no_is -species flies -e hmmer GCF_016746395.2_Prin_Dsim_3.1_genomic.fasta
+
+RepeatMasker -pa 20 -no_is -species Birds -e hmmer /moto/palab/users/dh2725/reference/bTaeGut1.pri.cur.20210409.fasta
+
+RepeatMasker -pa 50 -no_is -species flies -e hmmer GCF_016746235.2_Prin_Dtei_1.1_genomic.fasta
+
+
+#note that there are repeat element libraries specific to each organism you may be working with, so check the list
+

@@ -1,0 +1,5 @@
+###v1 15Feb2022
+
+#check how much space a user is taking 
+
+du -h -d 0 [directory]

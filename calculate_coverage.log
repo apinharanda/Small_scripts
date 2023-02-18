@@ -1,0 +1,14 @@
+####v1
+#Feb 17
+
+#snippet example
+#Calculate coverage from bam files after removing duplicates (markdup.bam in the pseudoref pipeline)
+
+#install using conda mosdepth
+
+conda activate mosdepth
+
+#can be run in the headnode for a few bams (as it doesnt take too long) but if doing it for lots of bams, submit to the hpc
+
+mosdepth b20 b20_sorted_markdup.bam
+mosdepth C108T C108T_sorted_markdup.bam

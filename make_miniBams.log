@@ -1,0 +1,27 @@
+#28Oct22
+#AP
+
+#Example on how to make mini bams to view on IGV, could also be viewed on geneious (I think it should be equivalent)
+#can be done in the head node for one, for more than one it is better to put the commands below in a script 
+
+#1) original bam
+
+H28_1_1_val_1.fq.gz_par1Aligned.sortedByCoord.out.bam
+
+#2)make index
+
+nohup samtools index H28_1_1_val_1.fq.gz_par1Aligned.sortedByCoord.out.bam &
+
+#3)make mini bam, where 2R:14207657-14215942 are the coordinates as in your reference 
+
+nohup samtools view -b H28_1_1_val_1.fq.gz_par1Aligned.sortedByCoord.out.bam 2R:14207657-14215942 > Poxn_H28_1_1_val_1.fq.gz_par1Aligned.sortedByCoord.out.bam &
+
+#4) then make mini bai
+
+nohup samtools index Poxn_H28_1_1_val_1.fq.gz_par1Aligned.sortedByCoord.out.bam &
+
+#5) Then (just for completion)
+The reference should be loaded into IGV as well as the annotation first 
+Then the bams can be opened.
+
+All the indexes and files need to be in the same folder when loading them into IGV

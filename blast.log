@@ -1,0 +1,31 @@
+#May 9th 2022
+
+###this is a quick cheat sheet to make a blast database and then blast
+
+conda activate base_genomics
+
+#have a fasta with the sequence that will be the reference and make a db
+#check man page for options, below is the minimal when we have a fasta nucleotide
+
+makeblastdb -in w.fa -dbtype nucl
+
+#have the query sequence also ready in fasta format
+#could use bedtools getfasta if coordinates are known
+#eg. bedtools getfasta -fi Bomo_genome_assembly.fa -bed small_window.bed > ASF_sweep_Chr4_QTL.fasta
+
+#but also OK to use the whole genome seq
+
+blastn -db w.fa -query Dsim_3.1_genomic_hardmasked.fasta -out Dsim_Dmel.fasta.out -evalue 1e-15  -outfmt 6 &
+
+##check out table for coordinate results
+#also check blast option in the man page, there is lots of filters, columns, output type etc 
+
+#then use bedtools get fasta to get the regions
+
+
+
+####23 Jan 23
+
+If it is for short sequences, as primers, we should use short db
+
+blastn -task blastn-short -db Bomo_genome_assembly.fa -query primer_sequences.fa -out primers_locations.fasta.out -evalue 1e-15  -outfmt 6

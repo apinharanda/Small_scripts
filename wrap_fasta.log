@@ -1,0 +1,17 @@
+###v1 14Feb2022
+
+#quick description of how to change the number of characters per line in a fasta
+
+#use the virtual environment seqkit
+#conda activate seqkit
+
+#check options
+
+#the command below makes wrapped fasta 1 line, and extracts chromosome of interest 
+seqkit seq -w0 DteiYun.fasta | grep -A1 -e 2L -e 2R -e 3L -e 3R -e X > DteiYun.formatted.fa
+
+#this makes a multiline into a single line fasta
+seqkit seq -w0 TUZ35_par2_L5.formatted.fa > TUZ35_par2_L5.formatted.w0.fa
+
+#this does the opposite
+seqkit seq -w60 TUZ35_par2_L5.formatted.w0.fa > TUZ35_par2_L5.formatted.w60.fa
