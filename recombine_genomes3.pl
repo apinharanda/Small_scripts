@@ -1,4 +1,9 @@
+#!perl 
+
+
 #2020 script by P Andolfatto
+
+####Ana's notes
 #from two reference genomes simulate constant recombination 
 ##example
 ## extract X chromosome and make diploid
@@ -15,15 +20,14 @@
 #--
 #>X_Dyak_Jess
 #NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNGGCTGCCAGCGTGGTGCT
-
+#
 # generate recombinant backcross individuals 
 # usage: perl recombine_genomes.pl infile scaffold backcross_to_parent(0,1) #progeny
 #perl recombine_genomes3.pl Dyak_ST_Jess_diploidX.fa X 0 10 >breakpoints
 
 
 
-#!perl 
-
+##########shared by Peter
 # creates a recombiant diploid genome from diploid fasta,
 # one recombination event per individual
 # assumes F1 backcross to specified parent
